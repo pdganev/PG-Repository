@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Substitute Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #suggestions {
+            position: absolute;
+            background-color: #f9f9f9;
+            width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        #suggestions div {
+            padding: 10px;
+            cursor: pointer;
+        }
+        #suggestions div:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Medicine Substitute Finder</h1>
+    <form method="POST">
+        <input type="text" id="medicine-search" name="medicine_name" placeholder="Enter medicine name" required>
+        <div id="suggestions"></div>
+        <input type="submit" value="Find Substitutes">
+    </form>
+
+    <script>
+    $(function() {
+        $("#medicine-search").on("input", function() {
+            var query = $(this).val();
+            if(query.length > 2) {
+                $.get("/autocomplete", {q: query}, function(data) {
+                    var suggestions = "";
+                    data.forEach(function(item) {
+                        suggestions += "<div>" + item + "</div>";
+                    });
+                    $("#suggestions").html(suggestions);
+                });
+            } else {
+                $("#suggestions").empty();
+            }
+        });
+
+        $(document).on("click", "#suggestions div", function() {
+            $("#medicine-search").val($(this).text());
+            $("#suggestions").empty();
+        });
+    });
+    </script>
+</body>
+</html>
